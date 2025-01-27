@@ -2,7 +2,7 @@
 
 Contributor: The Yukari Chess Team
 
-Source Code: https://github.com/yukarichess/yukari
+Source Code: https://github.com/yukarichess/neppa
 
 ## Purpose
 
