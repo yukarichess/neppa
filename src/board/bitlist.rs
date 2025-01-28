@@ -1,8 +1,6 @@
-use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Index, IndexMut, Not};
+use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Not};
 
-use crate::Square;
-
-use super::PieceIndex;
+use crate::{PieceIndex, Square};
 
 /// A set of 40 bits, each representing a piece.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -16,8 +14,14 @@ impl From<PieceIndex> for Bitlist {
 }
 
 impl From<u64> for Bitlist {
-    fn from(index: u64) -> Self {
-        Self(index)
+    fn from(value: u64) -> Self {
+        Self(value & 0xFF_FFFF_FFFF)
+    }
+}
+
+impl From<Bitlist> for u64 {
+    fn from(value: Bitlist) -> Self {
+        value.0
     }
 }
 
@@ -58,22 +62,21 @@ impl Not for Bitlist {
 }
 
 /// Array that stores the attacks to a square.
+/// 
+/// This represents the 40-bit attacks as 4+1 bytes.
 #[derive(Clone, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct AttackTable([Bitlist; Square::COUNT]);
+pub struct AttackTable([u32; Square::COUNT], [u8; Square::COUNT]);
 
-impl Index<Square> for AttackTable {
-    type Output = Bitlist;
-
-    fn index(&self, square: Square) -> &Self::Output {
-        let square = square.into_inner() as usize;
-        &self.0[square]
+impl AttackTable {
+    pub fn get(&self, square: Square) -> Bitlist {
+        let square = usize::from(square);
+        Bitlist::from((self.0[square] as u64) | ((self.1[square] as u64) << 32))
     }
-}
 
-impl IndexMut<Square> for AttackTable {
-    fn index_mut(&mut self, square: Square) -> &mut Self::Output {
-        let square = square.into_inner() as usize;
-        &mut self.0[square]
+    pub fn set(&mut self, square: Square, bitlist: Bitlist) {
+        let square = usize::from(square);
+        let bitlist = u64::from(bitlist);
+        self.0[square] = bitlist as u32;
+        self.1[square] = (bitlist >> 32) as u8;
     }
 }

@@ -6,7 +6,7 @@ pub struct Square(NonZeroU8);
 impl Display for Square {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         const RANKS: [char; 9] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
-        let square = self.into_inner();
+        let square = u8::from(*self);
         let file = square % 9;
         let rank = square / 9;
         write!(f, "{file}{}", RANKS[rank as usize])
@@ -35,10 +35,18 @@ impl FromStr for Square {
     }
 }
 
+impl From<Square> for u8 {
+    fn from(value: Square) -> Self {
+        u8::from(value.0) - 1
+    }
+}
+
+impl From<Square> for usize {
+    fn from(value: Square) -> Self {
+        usize::from(u8::from(value.0) - 1)
+    }
+}
+
 impl Square {
     pub const COUNT: usize = 81;
-
-    pub fn into_inner(self) -> u8 {
-        u8::from(self.0) - 1
-    }
 }

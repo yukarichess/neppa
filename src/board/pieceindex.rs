@@ -27,14 +27,12 @@ impl Index<Square> for PieceIndexArray {
     type Output = Option<PieceIndex>;
 
     fn index(&self, square: Square) -> &Self::Output {
-        let square = square.into_inner() as usize;
-        &self.0[square]
+        &self.0[usize::from(square)]
     }
 }
 
 impl IndexMut<Square> for PieceIndexArray {
     fn index_mut(&mut self, square: Square) -> &mut Self::Output {
-        let square = square.into_inner() as usize;
-        &mut self.0[square]
+        &mut self.0[usize::from(square)]
     }
 }
