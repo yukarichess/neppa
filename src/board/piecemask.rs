@@ -34,7 +34,17 @@ impl Piecemask {
         self.0.iter().copied().reduce(BitOr::bitor).unwrap_or(Bitlist::default())
     }
 
-    pub(super) fn add_piece(&mut self, piece: Piece, index: PieceIndex) {
+    pub fn piece_type(&self, index: PieceIndex) -> Option<Piece> {
+        for piece_type in 0..Piece::COUNT {
+            if !(self.0[piece_type] & index.into()).empty() {
+                return Some(unsafe { std::mem::transmute::<u8, Piece>(piece_type as u8) });
+            }
+        }
+        None
+    }
 
+    pub(super) fn add_piece(&mut self, piece: Piece, index: PieceIndex) {
+        let piece = piece as usize;
+        self.0[piece] |= index.into();
     }
 }

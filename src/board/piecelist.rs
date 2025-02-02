@@ -27,4 +27,9 @@ impl Piecelist {
     pub(super) fn new() -> Self {
         Self([None; PieceIndex::COUNT])
     }
+
+    pub(super) fn add_piece(&mut self, index: PieceIndex, square: Square) {
+        assert!(self[index].is_none());
+        self[index] = Some(square);
+    }
 }

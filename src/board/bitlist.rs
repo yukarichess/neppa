@@ -62,6 +62,11 @@ impl Not for Bitlist {
 }
 
 impl Bitlist {
+    /// Returns true if this `Bitlist` is empty.
+    pub const fn empty(self) -> bool {
+        self.0 == 0
+    }
+
     /// Return the lowest set bit of a `Bitlist` as a `PieceIndex`.
     pub const unsafe fn peek_nonzero(self) -> PieceIndex {
         if self.0 == 0 {
@@ -69,7 +74,7 @@ impl Bitlist {
         }
         #[allow(clippy::cast_possible_truncation)]
         let bit = self.0.trailing_zeros() as u8;
-        PieceIndex::new_unchecked(bit)
+        unsafe { PieceIndex::new_unchecked(bit) }
     }
 
 }

@@ -1,4 +1,4 @@
-use super::{bitlist::AttackTable, drops::Drops, pieceindex::PieceIndexArray, piecelist::Piecelist, piecemask::Piecemask, side::Sidemask};
+use super::{bitlist::AttackTable, drops::Drops, piece::PromotionlessPiece, pieceindex::PieceIndexArray, piecelist::Piecelist, piecemask::Piecemask, side::Sidemask};
 
 use crate::{Piece, Side, Square};
 
@@ -47,7 +47,14 @@ impl BoardData {
         &self.drops
     }
 
-    pub fn add_piece(&mut self, piece: Piece, side: Side) {
-        
+    pub fn add_piece(&mut self, piece: Piece, square: Square, side: Side) {
+        let index = self.sidemask.add_piece(side);
+        self.index.add_piece(index, square);
+        self.piecelist.add_piece(index, square);
+        self.piecemask.add_piece(piece, index);
+    }
+
+    pub fn add_drop(&mut self, side: Side, piece: PromotionlessPiece, count: u8) {
+        self.drops.add_drop(side, piece, count);
     }
 }

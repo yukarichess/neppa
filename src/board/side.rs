@@ -1,6 +1,6 @@
 use crate::{Bitlist, PieceIndex};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Side {
     /// player who goes first
     Sente,
@@ -28,6 +28,15 @@ impl Sidemask {
 
     pub fn empty(&self) -> Bitlist {
         !self.occupied()
+    }
+
+    pub fn piece_side(&self, index: PieceIndex) -> Option<Side> {
+        for piece_side in 0..Side::COUNT {
+            if !(self.0[piece_side] & index.into()).empty() {
+                return Some(unsafe { std::mem::transmute::<u8, Side>(piece_side as u8) });
+            }
+        }
+        None
     }
 
     pub(super) fn add_piece(&mut self, side: Side) -> PieceIndex {

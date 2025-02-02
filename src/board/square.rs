@@ -49,4 +49,11 @@ impl From<Square> for usize {
 
 impl Square {
     pub const COUNT: usize = 81;
+
+    pub fn from_rank_file(rank: u8, file: u8) -> Option<Self> {
+        if rank > 8 || file > 8 {
+            return None;
+        }
+        Some(Self(NonZeroU8::new(9*rank + file + 1)?))
+    }
 }

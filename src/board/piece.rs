@@ -66,6 +66,8 @@ impl Piece {
     }
 }
 
+#[derive(Copy, Clone)]
+#[repr(u8)]
 pub enum PromotionlessPiece {
     /// (歩兵 "foot soldier")
     Pawn,

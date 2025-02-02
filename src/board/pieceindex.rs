@@ -48,4 +48,9 @@ impl PieceIndexArray {
     pub(super) fn new() -> Self {
         Self([None; Square::COUNT])
     }
+
+    pub(super) fn add_piece(&mut self, index: PieceIndex, square: Square) {
+        assert!(self[square].is_none());
+        self[square] = Some(index);
+    }
 }
