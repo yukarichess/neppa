@@ -3,7 +3,7 @@ use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Not};
 use crate::{PieceIndex, Square};
 
 /// A set of 40 bits, each representing a piece.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Bitlist(u64);
 
@@ -61,6 +61,19 @@ impl Not for Bitlist {
     }
 }
 
+impl Bitlist {
+    /// Return the lowest set bit of a `Bitlist` as a `PieceIndex`.
+    pub const unsafe fn peek_nonzero(self) -> PieceIndex {
+        if self.0 == 0 {
+            unsafe { std::hint::unreachable_unchecked() };
+        }
+        #[allow(clippy::cast_possible_truncation)]
+        let bit = self.0.trailing_zeros() as u8;
+        PieceIndex::new_unchecked(bit)
+    }
+
+}
+
 /// Array that stores the attacks to a square.
 /// 
 /// This represents the 40-bit attacks as 4+1 bytes.
@@ -68,6 +81,10 @@ impl Not for Bitlist {
 pub struct AttackTable([u32; Square::COUNT], [u8; Square::COUNT]);
 
 impl AttackTable {
+    pub(super) fn new() -> Self {
+        Self([0; Square::COUNT], [0; Square::COUNT])
+    }
+
     pub fn get(&self, square: Square) -> Bitlist {
         let square = usize::from(square);
         Bitlist::from((self.0[square] as u64) | ((self.1[square] as u64) << 32))

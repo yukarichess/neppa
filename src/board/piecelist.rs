@@ -22,3 +22,9 @@ impl IndexMut<PieceIndex> for Piecelist {
         &mut self.0[index]
     }
 }
+
+impl Piecelist {
+    pub(super) fn new() -> Self {
+        Self([None; PieceIndex::COUNT])
+    }
+}
